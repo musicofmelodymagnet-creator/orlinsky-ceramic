@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(node screenshot.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(python -c \"import fitz; doc = fitz.open\\('C:/Users/vety/Desktop/Новая папка/1/фотоMiroFish - проверка упаковки.pdf'\\); print\\('pages:', doc.page_count\\)\")",
+      "Bash(python -c \"import pymupdf\")",
+      "Bash(pip install *)",
+      "Bash(python)",
+      "Bash(python -c \"from PIL import Image; print\\('OK'\\)\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/anthropics/skills/main/skills/frontend-design/SKILL.md\")",
+      "Bash(gh auth *)",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(winget install *)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)"
+    ]
+  }
+}
