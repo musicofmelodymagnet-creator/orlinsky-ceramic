@@ -866,6 +866,101 @@
   .footer-links a:hover { color: var(--bronze); }
 
   /* DECORATIVE ELEMENTS */
+  /* REVIEWS */
+  #reviews {
+    background: var(--deep);
+    padding: 120px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  #reviews::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(184,146,74,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 64px;
+  }
+  .review-card {
+    background: rgba(255,255,255,0.028);
+    border: 1px solid rgba(184,146,74,0.12);
+    padding: 44px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease, border-color 0.3s;
+  }
+  .review-card.visible { opacity: 1; transform: translateY(0); }
+  .review-card:nth-child(2) { transition-delay: 0.12s; }
+  .review-card:nth-child(3) { transition-delay: 0.24s; }
+  .review-card:hover { border-color: rgba(184,146,74,0.3); }
+  .review-stars {
+    display: flex;
+    gap: 5px;
+  }
+  .review-stars span {
+    color: var(--bronze);
+    font-size: 0.8rem;
+  }
+  .review-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(245,240,232,0.85);
+    line-height: 1.7;
+    flex: 1;
+  }
+  .review-text::before { content: '«'; }
+  .review-text::after  { content: '»'; }
+  .review-author {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .review-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ivory);
+    flex-shrink: 0;
+    border: 1px solid rgba(184,146,74,0.3);
+  }
+  .review-avatar.av1 { background: linear-gradient(135deg, #6B5040, #4A3828); }
+  .review-avatar.av2 { background: linear-gradient(135deg, #3D4A3A, #2A3527); }
+  .review-avatar.av3 { background: linear-gradient(135deg, #4A4035, #2C2820); }
+  .review-name {
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    color: var(--ivory);
+    text-transform: uppercase;
+  }
+  .review-location {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--bronze);
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+
   .bronze-rule {
     width: 100%;
     height: 1px;
@@ -1212,6 +1307,8 @@
     #gallery { padding: 80px 24px; }
     .gallery-grid { grid-template-columns: 1fr 1fr; }
     .gallery-item { grid-column: auto !important; grid-row: auto !important; aspect-ratio: 1/1 !important; }
+    #reviews { padding: 80px 24px; }
+    .reviews-grid { grid-template-columns: 1fr; gap: 2px; }
     #contact { padding: 100px 24px; }
     footer { padding: 36px 24px; flex-direction: column; text-align: center; }
     #manifesto { padding: 80px 24px; }
@@ -1477,6 +1574,57 @@
   </div>
 </section>
 
+<!-- REVIEWS -->
+<section id="reviews">
+  <p class="section-label scroll-reveal" data-i18n="reviews.label">Отзывы клиентов</p>
+  <h2 class="section-title scroll-reveal" data-i18n="reviews.title">О нас говорят</h2>
+  <div class="reviews-grid">
+
+    <div class="review-card scroll-card">
+      <div class="review-stars">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+      </div>
+      <p class="review-text" data-i18n="review1.text">Заказывала керамическую картину в подарок маме на юбилей. Когда она её увидела — расплакалась от восторга. Качество невероятное, упаковка как произведение искусства. Буду заказывать ещё.</p>
+      <div class="review-author">
+        <div class="review-avatar av1">АМ</div>
+        <div>
+          <div class="review-name" data-i18n="review1.name">Анна Морозова</div>
+          <div class="review-location" data-i18n="review1.city">Москва</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card scroll-card">
+      <div class="review-stars">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+      </div>
+      <p class="review-text" data-i18n="review2.text">Чайный набор превзошёл все ожидания. Каждая кружка неповторима — видно, что мастер вкладывает душу в каждое изделие. Пьём чай теперь только из них, это целый ритуал.</p>
+      <div class="review-author">
+        <div class="review-avatar av2">ДК</div>
+        <div>
+          <div class="review-name" data-i18n="review2.name">Дмитрий Ковалёв</div>
+          <div class="review-location" data-i18n="review2.city">Санкт-Петербург</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card scroll-card">
+      <div class="review-stars">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+      </div>
+      <p class="review-text" data-i18n="review3.text">Брошь из керамики стала моим любимым украшением. Получаю комплименты каждый раз, когда надеваю. Подарочная шкатулка с сургучной печатью — это отдельный вид искусства.</p>
+      <div class="review-author">
+        <div class="review-avatar av3">СВ</div>
+        <div>
+          <div class="review-name" data-i18n="review3.name">Светлана Волкова</div>
+          <div class="review-location" data-i18n="review3.city">Киев</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contact">
   <p class="contact-eyebrow scroll-reveal" data-i18n="contact.eyebrow">Хотите что-то особенное?</p>
@@ -1648,6 +1796,17 @@ const translations = {
     'contact.ph.message': 'Расскажите о вашей идее...',
     'contact.submit': 'Отправить запрос',
     'contact.success': 'Спасибо за обращение.<br>Мы свяжемся с вами в ближайшее время.',
+    'reviews.label': 'Отзывы клиентов',
+    'reviews.title': 'О нас говорят',
+    'review1.text': 'Заказывала керамическую картину в подарок маме на юбилей. Когда она её увидела — расплакалась от восторга. Качество невероятное, упаковка как произведение искусства. Буду заказывать ещё.',
+    'review1.name': 'Анна Морозова',
+    'review1.city': 'Москва',
+    'review2.text': 'Чайный набор превзошёл все ожидания. Каждая кружка неповторима — видно, что мастер вкладывает душу в каждое изделие. Пьём чай теперь только из них, это целый ритуал.',
+    'review2.name': 'Дмитрий Ковалёв',
+    'review2.city': 'Санкт-Петербург',
+    'review3.text': 'Брошь из керамики стала моим любимым украшением. Получаю комплименты каждый раз, когда надеваю. Подарочная шкатулка с сургучной печатью — это отдельный вид искусства.',
+    'review3.name': 'Светлана Волкова',
+    'review3.city': 'Киев',
     'footer.copy': '© 2026 ORLINSKY Ceramic Studio. Ручная работа.',
   },
   en: {
@@ -1699,6 +1858,17 @@ const translations = {
     'contact.ph.message': 'Tell us about your idea...',
     'contact.submit': 'Send Request',
     'contact.success': 'Thank you for reaching out.<br>We\'ll get back to you shortly.',
+    'reviews.label': 'Client Reviews',
+    'reviews.title': 'What They Say',
+    'review1.text': 'I ordered a ceramic painting as a birthday gift for my mother. When she saw it, she was moved to tears. The quality is incredible, the packaging itself is a work of art. Will definitely order again.',
+    'review1.name': 'Anna Morozova',
+    'review1.city': 'Moscow',
+    'review2.text': 'The tea set exceeded all expectations. Each mug is unique — you can see the master puts their soul into every piece. We only drink tea from them now, it has become a whole ritual.',
+    'review2.name': 'Dmitry Kovalev',
+    'review2.city': 'Saint Petersburg',
+    'review3.text': 'The ceramic brooch has become my favourite piece of jewellery. I receive compliments every time I wear it. The gift box with the wax seal is a work of art in itself.',
+    'review3.name': 'Svetlana Volkova',
+    'review3.city': 'Kyiv',
     'footer.copy': '© 2026 ORLINSKY Ceramic Studio. Handmade.',
   },
   uk: {
@@ -1750,6 +1920,17 @@ const translations = {
     'contact.ph.message': 'Розкажіть про вашу ідею...',
     'contact.submit': 'Надіслати запит',
     'contact.success': 'Дякуємо за звернення.<br>Ми зв\'яжемося з вами найближчим часом.',
+    'reviews.label': 'Відгуки клієнтів',
+    'reviews.title': 'Про нас говорять',
+    'review1.text': 'Замовляла керамічну картину в подарунок мамі на ювілей. Коли вона її побачила — розплакалась від захвату. Якість неймовірна, пакування як витвір мистецтва. Буду замовляти ще.',
+    'review1.name': 'Анна Морозова',
+    'review1.city': 'Москва',
+    'review2.text': 'Чайний набір перевершив усі очікування. Кожна горнятка неповторна — видно, що майстер вкладає душу в кожен виріб. П\'ємо чай тепер тільки з них, це цілий ритуал.',
+    'review2.name': 'Дмитро Ковальов',
+    'review2.city': 'Санкт-Петербург',
+    'review3.text': 'Брошка з кераміки стала моєю улюбленою прикрасою. Отримую компліменти щоразу, коли надіваю. Подарункова скринька з сургучною печаткою — це окремий вид мистецтва.',
+    'review3.name': 'Світлана Волкова',
+    'review3.city': 'Київ',
     'footer.copy': '© 2026 ORLINSKY Ceramic Studio. Ручна робота.',
   }
 };
