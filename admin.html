@@ -543,6 +543,87 @@ html, body { height: 100%; background: var(--bg); color: var(--ivory); font-fami
   text-overflow: ellipsis;
   min-width: 0;
 }
+
+/* INLINE MEDIA (inside text panels) */
+.inline-media-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 18px 20px 16px;
+  margin-bottom: 28px;
+}
+.inline-media-section-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+.inline-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.inline-media-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.inline-media-card:hover { border-color: rgba(184,146,74,0.5); }
+.inline-media-img-wrap {
+  position: relative;
+  height: 100px;
+  overflow: hidden;
+  background: var(--surface);
+  cursor: pointer;
+}
+.inline-media-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+.inline-media-card:hover .inline-media-img-wrap img { transform: scale(1.06); }
+.inline-media-video-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: var(--text-dim);
+}
+.inline-media-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.inline-media-card:hover .inline-media-overlay { opacity: 1; }
+.inline-media-replace-btn {
+  background: var(--bronze);
+  color: var(--bg);
+  border: none;
+  padding: 6px 14px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.inline-media-name {
+  padding: 6px 8px;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 </head>
 <body>
@@ -581,6 +662,7 @@ html, body { height: 100%; background: var(--bg); color: var(--ivory); font-fami
         <div class="sidebar-item" onclick="showPanel('nature')" data-panel="nature"><i class="sidebar-icon">◎</i>Природа</div>
         <div class="sidebar-item" onclick="showPanel('process')" data-panel="process"><i class="sidebar-icon">⬢</i>Процесс</div>
         <div class="sidebar-item" onclick="showPanel('packaging')" data-panel="packaging"><i class="sidebar-icon">▣</i>Упаковка</div>
+        <div class="sidebar-item" onclick="showPanel('gallery')" data-panel="gallery"><i class="sidebar-icon">◼</i>Галерея</div>
         <div class="sidebar-item" onclick="showPanel('contact')" data-panel="contact"><i class="sidebar-icon">◻</i>Контакт</div>
         <div class="sidebar-item" onclick="showPanel('footer')" data-panel="footer"><i class="sidebar-icon">▬</i>Футер</div>
       </div>
@@ -727,7 +809,7 @@ let previewOpen = false;
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 const SECTIONS = [
-  { id: 'hero', title: 'Hero — Главный экран', fields: [
+  { id: 'hero', title: 'Hero — Главный экран', media: ['hero_video'], fields: [
     { key: 'hero.eyebrow', label: 'Подзаголовок', type: 'input' },
     { key: 'hero.scroll', label: 'Текст прокрутки', type: 'input' },
   ]},
@@ -735,7 +817,7 @@ const SECTIONS = [
     { key: 'manifesto.quote', label: 'Цитата (можно использовать <br>)', type: 'textarea' },
     { key: 'manifesto.sub', label: 'Подпись', type: 'input' },
   ]},
-  { id: 'collections', title: 'Коллекции', fields: [
+  { id: 'collections', title: 'Коллекции', media: ['collection1','collection2','collection3'], fields: [
     { key: 'collections.label', label: 'Метка секции', type: 'input' },
     { key: 'collections.title', label: 'Заголовок', type: 'input' },
     '__divider__Коллекция 01',
@@ -748,13 +830,13 @@ const SECTIONS = [
     { key: 'c3.title', label: 'Название', type: 'input' },
     { key: 'c3.desc', label: 'Описание', type: 'textarea' },
   ]},
-  { id: 'featured', title: 'Флагманская коллекция', fields: [
+  { id: 'featured', title: 'Флагманская коллекция', media: ['featured'], fields: [
     { key: 'featured.tag', label: 'Метка', type: 'input' },
     { key: 'featured.title', label: 'Заголовок (можно <br>)', type: 'input' },
     { key: 'featured.body', label: 'Основной текст', type: 'textarea' },
     { key: 'featured.btn', label: 'Кнопка', type: 'input' },
   ]},
-  { id: 'nature', title: 'Секция Природа', fields: [
+  { id: 'nature', title: 'Секция Природа', media: ['nature_video'], fields: [
     { key: 'nature.quote', label: 'Цитата (можно <br>)', type: 'textarea' },
   ]},
   { id: 'process', title: 'Процесс создания', fields: [
@@ -773,7 +855,7 @@ const SECTIONS = [
     { key: 'step4.title', label: 'Название', type: 'input' },
     { key: 'step4.desc', label: 'Описание', type: 'textarea' },
   ]},
-  { id: 'packaging', title: 'Упаковка', fields: [
+  { id: 'packaging', title: 'Упаковка', media: ['packaging_kraft_open','packaging_kraft_closed','packaging_black_open','packaging_black_closed'], fields: [
     '__divider__Вариант 01 — Крафт-коробка',
     { key: 'pack.opt1', label: 'Метка', type: 'input' },
     { key: 'pack.kraft.title', label: 'Название', type: 'input' },
@@ -782,6 +864,10 @@ const SECTIONS = [
     { key: 'pack.opt2', label: 'Метка', type: 'input' },
     { key: 'pack.black.title', label: 'Название', type: 'input' },
     { key: 'pack.black.desc', label: 'Описание', type: 'textarea' },
+  ]},
+  { id: 'gallery', title: 'Галерея', media: ['gallery1','gallery2','gallery3','gallery4'], fields: [
+    { key: 'gallery.label', label: 'Метка секции', type: 'input' },
+    { key: 'gallery.title', label: 'Заголовок', type: 'input' },
   ]},
   { id: 'contact', title: 'Контактная форма', fields: [
     { key: 'contact.eyebrow', label: 'Подзаголовок', type: 'input' },
@@ -811,7 +897,7 @@ const MEDIA_SLOTS = [
   { key: 'packaging_black_closed',label: 'Упаковка — Шкатулка закрытая',    type: 'image',  default: 'media/packaging/black_final.jpg' },
   { key: 'gallery1',              label: 'Галерея — Фото 1',                type: 'image',  default: 'media/photo_2026-01-16_04-39-31.jpg' },
   { key: 'gallery2',              label: 'Галерея — Фото 2',                type: 'image',  default: 'media/photo_2026-01-16_04-39-34.jpg' },
-  { key: 'gallery3',              label: 'Галерея — Фото 3',                type: 'media/photo_2026-01-19_18-39-52.jpg', default: 'media/photo_2026-01-19_18-39-52.jpg' },
+  { key: 'gallery3',              label: 'Галерея — Фото 3',                type: 'image',  default: 'media/photo_2026-01-19_18-39-52.jpg' },
   { key: 'gallery4',              label: 'Галерея — Фото 4',                type: 'image',  default: 'media/photo_2026-01-19_18-39-49.jpg' },
 ];
 
@@ -868,14 +954,45 @@ function showPanel(id) {
   renderTextPanel(id, main);
 }
 
+// ─── Inline media helper ──────────────────────────────────────────────────────
+function renderInlineMedia(mediaKeys) {
+  if (!mediaKeys || !mediaKeys.length) return '';
+  const cards = mediaKeys.map(key => {
+    const slot = MEDIA_SLOTS.find(s => s.key === key);
+    if (!slot) return '';
+    const cur = content.media?.[slot.key] || slot.default;
+    const isVideo = slot.type === 'video';
+    const shortLabel = slot.label.replace(/^[^—]*— ?/, '');
+    const inner = isVideo
+      ? `<div class="inline-media-video-icon">▶</div>
+         <div class="inline-media-overlay">
+           <button class="inline-media-replace-btn" onclick="replaceMedia('${slot.key}','${slot.type}');event.stopPropagation()">Заменить</button>
+         </div>`
+      : `<img src="${cur}?t=${Date.now()}" alt="" onerror="this.style.opacity='0.12'">
+         <div class="inline-media-overlay">
+           <button class="inline-media-replace-btn" onclick="replaceMedia('${slot.key}','${slot.type}');event.stopPropagation()">Заменить</button>
+         </div>`;
+    return `<div class="inline-media-card">
+      <div class="inline-media-img-wrap">${inner}</div>
+      <div class="inline-media-name">${shortLabel}</div>
+    </div>`;
+  }).join('');
+  return `<div class="inline-media-section">
+    <div class="inline-media-section-title">Медиафайлы раздела</div>
+    <div class="inline-media-grid">${cards}</div>
+  </div>`;
+}
+
 // ─── Text panel ───────────────────────────────────────────────────────────────
 function renderTextPanel(sectionId, container) {
   const sec = SECTIONS.find(s => s.id === sectionId);
   if (!sec) return;
+  const mediaHtml = renderInlineMedia(sec.media);
   container.innerHTML = `
     <div class="panel active">
       <div class="panel-title">${sec.title}</div>
       <div class="panel-desc">Пустое поле = используется текст по умолчанию</div>
+      ${mediaHtml}
       <div class="lang-tabs">
         <div class="lang-tab ${currentLang==='ru'?'active':''}" onclick="switchLang('ru')">RUS</div>
         <div class="lang-tab ${currentLang==='en'?'active':''}" onclick="switchLang('en')">ENG</div>
@@ -1156,7 +1273,7 @@ function replaceMedia(key, type) {
     content.media[key] = path;
     await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
     showToast('Файл заменён', 'success');
-    renderMediaPanel(document.getElementById('mainArea'));
+    showPanel(currentPanel);
     if (previewOpen) setTimeout(refreshPreview, 400);
   };
   input.click();
