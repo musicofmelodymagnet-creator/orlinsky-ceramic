@@ -1745,6 +1745,73 @@ window.addEventListener('scroll', () => {
   }
 }, { passive: true });
 
+// MEDIA OVERRIDES
+const MEDIA_MAP = {
+  hero_video:             () => { const s = document.querySelector('#hero-video source'); if(s){s.src=v;document.getElementById('hero-video').load();} },
+  nature_video:           () => { const s = document.querySelector('#nature-video source'); if(s){s.src=v;document.getElementById('nature-video').load();} },
+  collection1:            () => { const el=document.querySelector('#collections .collection-card:nth-child(1) img'); if(el)el.src=v; },
+  collection2:            () => { const el=document.querySelector('#collections .collection-card:nth-child(2) img'); if(el)el.src=v; },
+  collection3:            () => { const el=document.querySelector('#collections .collection-card:nth-child(3) img'); if(el)el.src=v; },
+  featured:               () => { const el=document.getElementById('parallaxImg'); if(el)el.src=v; },
+  packaging_kraft_open:   () => { const el=document.querySelector('#packaging .pack-side:nth-child(1) .pack-photo:nth-child(1) img'); if(el)el.src=v; },
+  packaging_kraft_closed: () => { const el=document.querySelector('#packaging .pack-side:nth-child(1) .pack-photo:nth-child(2) img'); if(el)el.src=v; },
+  packaging_black_open:   () => { const el=document.querySelector('#packaging .pack-side:nth-child(3) .pack-photo:nth-child(1) img'); if(el)el.src=v; },
+  packaging_black_closed: () => { const el=document.querySelector('#packaging .pack-side:nth-child(3) .pack-photo:nth-child(2) img'); if(el)el.src=v; },
+  gallery1: () => { const el=document.querySelector('.gallery-item:nth-child(1) img'); if(el)el.src=v; },
+  gallery2: () => { const el=document.querySelector('.gallery-item:nth-child(2) img'); if(el)el.src=v; },
+  gallery3: () => { const el=document.querySelector('.gallery-item:nth-child(3) img'); if(el)el.src=v; },
+  gallery4: () => { const el=document.querySelector('.gallery-item:nth-child(4) img'); if(el)el.src=v; },
+};
+let v; // used inside MEDIA_MAP closures
+function applyMediaOverrides(media) {
+  Object.entries(media).forEach(([key, path]) => {
+    v = path;
+    if (MEDIA_MAP[key]) MEDIA_MAP[key]();
+  });
+}
+
+// CUSTOM REVIEWS
+let customReviews = null;
+function renderCustomReviews(reviews) {
+  const grid = document.querySelector('.reviews-grid');
+  if (!grid || !reviews.length) return;
+  customReviews = reviews;
+  grid.innerHTML = reviews.map((r, i) => `
+    <div class="review-card scroll-card" style="transition-delay:${i*0.12}s">
+      <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="review-text" data-rv-text="${i}"></p>
+      <div class="review-author">
+        <div class="review-avatar ${r.avatarClass||'av1'}">${r.avatar||'?'}</div>
+        <div>
+          <div class="review-name" data-rv-name="${i}"></div>
+          <div class="review-location" data-rv-city="${i}"></div>
+        </div>
+      </div>
+    </div>`).join('');
+  grid.querySelectorAll('.scroll-card').forEach(el => revealObserver.observe(el));
+}
+function updateCustomReviewsLang(lang) {
+  if (!customReviews) return;
+  customReviews.forEach((r, i) => {
+    const t = document.querySelector(`[data-rv-text="${i}"]`);
+    const n = document.querySelector(`[data-rv-name="${i}"]`);
+    const c = document.querySelector(`[data-rv-city="${i}"]`);
+    if (t) t.textContent = r.text?.[lang] || r.text?.ru || '';
+    if (n) n.textContent = r.name?.[lang] || r.name?.ru || '';
+    if (c) c.textContent = r.city?.[lang] || r.city?.ru || '';
+  });
+}
+
+// LOAD CUSTOM CONTENT FROM SERVER
+fetch('/content.json').then(r => r.json()).then(custom => {
+  ['ru','en','uk'].forEach(lang => {
+    if (custom[lang]) Object.assign(translations[lang], custom[lang]);
+  });
+  if (custom.media && Object.keys(custom.media).length) applyMediaOverrides(custom.media);
+  if (custom.reviews && custom.reviews.length) renderCustomReviews(custom.reviews);
+  applyLang(currentLang);
+}).catch(() => {});
+
 // I18N
 const translations = {
   ru: {
@@ -1958,6 +2025,7 @@ function applyLang(lang) {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
   });
+  updateCustomReviewsLang(lang);
 }
 
 // Auto-detect: saved preference → browser locale → fallback ru

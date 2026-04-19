@@ -1,0 +1,17 @@
+Options -Indexes
+
+# Защита конфига
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Защита .env
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# /admin → admin.html
+RewriteEngine On
+RewriteRule ^admin/?$ admin.html [L]
