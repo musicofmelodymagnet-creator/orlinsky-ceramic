@@ -383,6 +383,166 @@ html, body { height: 100%; background: var(--bg); color: var(--ivory); font-fami
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { border-color: var(--success); color: var(--success); }
 .toast.error { border-color: var(--danger); color: var(--danger); }
+
+/* PREVIEW PANE */
+.preview-pane {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.preview-pane.open { width: 400px; }
+.preview-pane-header {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  gap: 6px;
+  flex-shrink: 0;
+}
+.preview-pane-title {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex: 1;
+}
+.btn-icon {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 5px 8px;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.btn-icon:hover { color: var(--ivory); }
+.preview-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #0a0908;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+.preview-iframe {
+  border: none;
+  width: 375px;
+  height: 2800px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+}
+.btn-preview {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 5px 14px;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.btn-preview:hover { color: var(--bronze); border-color: var(--bronze); }
+.btn-preview.active { color: var(--bronze); border-color: var(--bronze); background: rgba(184,146,74,0.06); }
+.btn-open-site {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-open-site:hover { color: var(--ivory); }
+
+/* MEDIA GRID CARDS */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.media-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+.media-card:hover { border-color: rgba(184,146,74,0.45); }
+.media-card-img-wrap {
+  position: relative;
+  height: 125px;
+  overflow: hidden;
+  background: var(--bg);
+  cursor: pointer;
+}
+.media-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s;
+}
+.media-card:hover .media-card-img-wrap img { transform: scale(1.06); }
+.media-card-video-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: var(--text-dim);
+}
+.media-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.media-card:hover .media-card-overlay { opacity: 1; }
+.media-card-replace-btn {
+  background: var(--bronze);
+  color: var(--bg);
+  border: none;
+  padding: 8px 18px;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.media-card-replace-btn:hover { background: var(--bronze-light); }
+.media-card-footer {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.media-card-label {
+  font-size: 0.68rem;
+  color: var(--ivory);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 </style>
 </head>
 <body>
@@ -402,7 +562,11 @@ html, body { height: 100%; background: var(--bg); color: var(--ivory); font-fami
 <div id="app">
   <div class="admin-header">
     <div class="header-logo">ORLINSKY · Admin</div>
-    <button class="btn-logout" onclick="doLogout()">Выйти</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="index.html" target="_blank" class="btn-open-site">↗ Открыть сайт</a>
+      <button class="btn-preview" id="previewToggle" onclick="togglePreview()">◫ Предпросмотр</button>
+      <button class="btn-logout" onclick="doLogout()">Выйти</button>
+    </div>
   </div>
   <div class="admin-layout">
 
@@ -429,6 +593,19 @@ html, body { height: 100%; background: var(--bg); color: var(--ivory); font-fami
 
     <!-- MAIN -->
     <div class="admin-main" id="mainArea"></div>
+
+    <!-- PREVIEW PANE -->
+    <div class="preview-pane" id="previewPane">
+      <div class="preview-pane-header">
+        <span class="preview-pane-title">Предпросмотр · Mobile</span>
+        <button class="btn-icon" onclick="refreshPreview()" title="Обновить">↻</button>
+        <button class="btn-icon" onclick="window.open('index.html','_blank')" title="Открыть в новой вкладке">↗</button>
+        <button class="btn-icon" onclick="togglePreview()" title="Закрыть">✕</button>
+      </div>
+      <div class="preview-wrapper">
+        <iframe id="previewFrame" src="" frameborder="0" class="preview-iframe"></iframe>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -546,6 +723,7 @@ let editingReviewIdx = null;
 let modalLang = 'ru';
 let selectedAvatarColor = 'av1';
 let pendingMediaSlot = null;
+let previewOpen = false;
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
 const SECTIONS = [
@@ -755,8 +933,10 @@ function collectFields() {
 async function saveContent(sectionId) {
   collectFields();
   const r = await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
-  if (r.ok) showToast('Сохранено', 'success');
-  else showToast('Ошибка сохранения', 'error');
+  if (r.ok) {
+    showToast('Сохранено', 'success');
+    if (previewOpen) setTimeout(refreshPreview, 400);
+  } else showToast('Ошибка сохранения', 'error');
 }
 
 function resetSection(sectionId) {
@@ -912,17 +1092,19 @@ function renderMediaPanel(container) {
   const slots = MEDIA_SLOTS.map(slot => {
     const cur = content.media?.[slot.key] || slot.default;
     const isVideo = slot.type === 'video';
-    const preview = isVideo
-      ? `<div class="media-slot-preview video-preview">▶</div>`
-      : `<img class="media-slot-preview" src="${cur}?t=${Date.now()}" onerror="this.src=''" alt="">`;
-    return `<div class="media-slot">
-      ${preview}
-      <div class="media-slot-info">
-        <div class="media-slot-label">${slot.label}</div>
-        <div class="media-slot-path">${cur}</div>
-      </div>
-      <div class="media-slot-actions">
-        <button class="btn-sm" onclick="replaceMedia('${slot.key}','${slot.type}')">Заменить</button>
+    const inner = isVideo
+      ? `<div class="media-card-video-icon">▶</div>
+         <div class="media-card-overlay">
+           <button class="media-card-replace-btn" onclick="replaceMedia('${slot.key}','${slot.type}');event.stopPropagation()">Заменить</button>
+         </div>`
+      : `<img src="${cur}?t=${Date.now()}" alt="" onerror="this.style.opacity='0.2'">
+         <div class="media-card-overlay">
+           <button class="media-card-replace-btn" onclick="replaceMedia('${slot.key}','${slot.type}');event.stopPropagation()">Заменить</button>
+         </div>`;
+    return `<div class="media-card">
+      <div class="media-card-img-wrap">${inner}</div>
+      <div class="media-card-footer">
+        <div class="media-card-label">${slot.label}</div>
       </div>
     </div>`;
   }).join('');
@@ -930,12 +1112,12 @@ function renderMediaPanel(container) {
   container.innerHTML = `
     <div class="panel active">
       <div class="panel-title">Медиафайлы</div>
-      <div class="panel-desc">Замените фото и видео на сайте. Файлы загружаются на сервер.</div>
-      <div class="media-slots">${slots}</div>
+      <div class="panel-desc">Наведите на фото или видео — появится кнопка «Заменить». Новый файл загрузится на сервер автоматически.</div>
+      <div class="media-grid">${slots}</div>
       <div class="field-section-title">Все загруженные файлы</div>
       <div class="media-upload-area" onclick="document.getElementById('libUpload').click()">
         <div style="font-size:1.5rem;color:var(--text-dim)">+</div>
-        <p>Нажмите чтобы загрузить файл</p>
+        <p>Нажмите чтобы загрузить файл в библиотеку</p>
       </div>
       <input type="file" id="libUpload" style="display:none" accept="image/*,video/*" onchange="uploadToLibrary(this)">
       <div class="media-library" id="mediaLibrary">Загрузка...</div>
@@ -975,6 +1157,7 @@ function replaceMedia(key, type) {
     await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
     showToast('Файл заменён', 'success');
     renderMediaPanel(document.getElementById('mainArea'));
+    if (previewOpen) setTimeout(refreshPreview, 400);
   };
   input.click();
 }
@@ -1011,6 +1194,21 @@ function showToast(msg, type) {
 document.getElementById('reviewModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
 });
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+function togglePreview() {
+  previewOpen = !previewOpen;
+  document.getElementById('previewPane').classList.toggle('open', previewOpen);
+  document.getElementById('previewToggle').classList.toggle('active', previewOpen);
+  if (previewOpen) {
+    const frame = document.getElementById('previewFrame');
+    if (!frame.src || frame.src === window.location.href) frame.src = 'index.html';
+  }
+}
+
+function refreshPreview() {
+  document.getElementById('previewFrame').src = 'index.html?t=' + Date.now();
+}
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 init();
