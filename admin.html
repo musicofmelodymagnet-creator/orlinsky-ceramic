@@ -639,7 +639,7 @@ const MEDIA_SLOTS = [
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 async function init() {
-  const r = await fetch('/api/auth.php').then(r => r.json());
+  const r = await fetch('api/auth.php').then(r => r.json());
   if (r.authenticated) {
     await loadContent();
     showApp();
@@ -648,7 +648,7 @@ async function init() {
 
 async function doLogin() {
   const pass = document.getElementById('loginPass').value;
-  const r = await fetch('/api/login.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ password: pass }) });
+  const r = await fetch('api/login.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ password: pass }) });
   if (r.ok) {
     await loadContent();
     showApp();
@@ -661,7 +661,7 @@ async function doLogin() {
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
 async function doLogout() {
-  await fetch('/api/logout.php', { method: 'POST' });
+  await fetch('api/logout.php', { method: 'POST' });
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
 }
@@ -673,7 +673,7 @@ function showApp() {
 }
 
 async function loadContent() {
-  content = await fetch('/api/content.php').then(r => r.json());
+  content = await fetch('api/content.php').then(r => r.json());
   if (!content.reviews) content.reviews = [];
   if (!content.media) content.media = {};
 }
@@ -754,7 +754,7 @@ function collectFields() {
 
 async function saveContent(sectionId) {
   collectFields();
-  const r = await fetch('/api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
+  const r = await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
   if (r.ok) showToast('Сохранено', 'success');
   else showToast('Ошибка сохранения', 'error');
 }
@@ -770,7 +770,7 @@ function resetSection(sectionId) {
       });
     }
   });
-  fetch('/api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
+  fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
   renderTextPanel(sectionId, document.getElementById('mainArea'));
   showToast('Сброшено к исходным', 'success');
 }
@@ -887,7 +887,7 @@ async function saveReview() {
     content.reviews.push(r);
   }
 
-  await fetch('/api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
+  await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
   closeModal();
   renderReviewsPanel(document.getElementById('mainArea'));
   showToast('Отзыв сохранён', 'success');
@@ -896,7 +896,7 @@ async function saveReview() {
 function deleteReview(idx) {
   if (!confirm('Удалить этот отзыв?')) return;
   content.reviews.splice(idx, 1);
-  fetch('/api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
+  fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
   renderReviewsPanel(document.getElementById('mainArea'));
   showToast('Отзыв удалён', 'success');
 }
@@ -944,7 +944,7 @@ function renderMediaPanel(container) {
 }
 
 async function loadMediaLibrary() {
-  const files = await fetch('/api/media.php').then(r => r.json());
+  const files = await fetch('api/media.php').then(r => r.json());
   const lib = document.getElementById('mediaLibrary');
   if (!lib) return;
   if (!files.length) { lib.innerHTML = '<p style="color:var(--text-dim);font-size:0.75rem">Нет файлов</p>'; return; }
@@ -967,12 +967,12 @@ function replaceMedia(key, type) {
     const fd = new FormData();
     fd.append('file', input.files[0]);
     showToast('Загрузка...', '');
-    const r = await fetch('/api/upload.php', { method: 'POST', body: fd });
+    const r = await fetch('api/upload.php', { method: 'POST', body: fd });
     if (!r.ok) { showToast('Ошибка загрузки', 'error'); return; }
     const { path } = await r.json();
     if (!content.media) content.media = {};
     content.media[key] = path;
-    await fetch('/api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
+    await fetch('api/content.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(content) });
     showToast('Файл заменён', 'success');
     renderMediaPanel(document.getElementById('mainArea'));
   };
@@ -984,7 +984,7 @@ async function uploadToLibrary(input) {
   const fd = new FormData();
   fd.append('file', input.files[0]);
   showToast('Загрузка...', '');
-  const r = await fetch('/api/upload.php', { method: 'POST', body: fd });
+  const r = await fetch('api/upload.php', { method: 'POST', body: fd });
   if (r.ok) { showToast('Файл загружен — нажмите на него чтобы скопировать путь', 'success'); loadMediaLibrary(); }
   else showToast('Ошибка загрузки', 'error');
   input.value = '';

@@ -1803,7 +1803,7 @@ function updateCustomReviewsLang(lang) {
 }
 
 // LOAD CUSTOM CONTENT FROM SERVER
-fetch('/content.json').then(r => r.json()).then(custom => {
+fetch('content.json').then(r => r.json()).then(custom => {
   ['ru','en','uk'].forEach(lang => {
     if (custom[lang]) Object.assign(translations[lang], custom[lang]);
   });
